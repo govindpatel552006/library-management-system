@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -9,10 +10,13 @@ const authRoutes = require("./routes/auth");
 const app = express();
 
 // Middlewares
-app.use(cors({
-  origin: "*", // temporary (we’ll lock it later)
-}));
 app.use(express.json());
+
+// ⚡ CORS configuration for production frontend
+app.use(cors({
+  origin: " https://library-management-system-iv1f.vercel.app/",  
+  credentials: true, // allow cookies/auth headers
+}));
 
 // Routes
 app.use("/api/students", studentRoutes);
@@ -23,8 +27,12 @@ const PORT = process.env.PORT || 5000;
 
 // Database + Server
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
+    console.log("✅ MongoDB connected successfully");
     app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
     });
@@ -32,4 +40,3 @@ mongoose
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
   });
-
