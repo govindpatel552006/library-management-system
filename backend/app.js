@@ -15,24 +15,27 @@ const app = express();
 app.use(express.json());
 
 // --------------------
-// ✅ CORS FIX (Express v5 compatible)
+// ✅ CORS CONFIG (FINAL FIX)
 // --------------------
+// 👉 YAHAN APNE REAL FRONTEND RENDER URL ADD KIYA HAI
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://library-management-system-iv1f.vercel.app",
+  "http://localhost:5173", // local frontend
+  "https://library-management-system-1-hnrs.onrender.com", // FRONTEND (Render Static Site)
 ];
 
+// ⚠️ Express v5 compatible CORS
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow requests with no origin (Postman, server-to-server)
+      // Allow server-to-server / Postman requests
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(new Error("CORS not allowed"), false);
+      console.error("❌ Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
@@ -43,6 +46,13 @@ app.use(
 // --------------------
 app.use("/api/students", studentRoutes);
 app.use("/api/auth", authRoutes);
+
+// --------------------
+// Optional health check (recommended)
+// --------------------
+app.get("/", (req, res) => {
+  res.send("🚀 Library Management Backend is running");
+});
 
 // --------------------
 // Port
