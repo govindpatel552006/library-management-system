@@ -8,9 +8,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // ✅ Backend URL from environment (Render / Local both)
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleLogin = async () => {
+    setError("");
+
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,9 +28,10 @@ const Login = () => {
       if (res.ok) {
         navigate("/dashboard"); // ✅ Owner Dashboard
       } else {
-        setError(data.message);
+        setError(data.message || "Login failed");
       }
     } catch (err) {
+      console.error(err);
       setError("Server error");
     }
   };
@@ -83,4 +89,3 @@ const Login = () => {
 };
 
 export default Login;
-
